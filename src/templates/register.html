@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+	{% block title %}
+	Registracija - Python Fashion
+	{% endblock %}
+	{% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}  
+    {% block main %}  
+        <main>
+            <div class="container">
+                <div class="login-form-container">                    
+                    <form class="login-form" action="/register" method="POST" enctype="multipart/form-data">
+                        <h2>Register</h2>                                                                                                                                              
+                        <p class="greska">{{ greska }}</p>  
+                        <p>
+                            <label for="username">Username: </label>
+                            <input type="text" name="username">
+                        </p>
+                        <p>
+                            <label for="email">Email: </label>
+                            <input type="email" name="email">
+                        </p>
+                        <p>
+                            <label for="password">Password: </label>
+                            <input type="password" name="password">
+                        </p>
+                        <p>
+                            <label for="confirm-password">Potvrdi password: </label>
+                            <input type="password" name="confirm_password"> 
+                        </p>
+                        <p>
+                            <label for="ime_prezime">Ime i prezime: </label>
+                            <input type="text" name="ime_prezime">                  
+                        </p>
+                        <p>
+                            <label for="adresa">Adresa</label>
+                            <input type="text" name="adresa">
+                        </p>
+                        <p>
+                            <label for="broj_telefona">Broj telefona: </label>                    
+                            <input type="text" name="broj_telefona">                                        
+                        </p>
+                        <p>
+                            <label for="putanja_slike">Slika: </label>                    
+                            <input type="file" name="slika">                                        
+                        </p>
+                        <p class="p-input-submit">
+                            <label for=""></label>
+                            <input type="submit" value="Registruj se">
+                        </p>                        
+                    </form>
+                </div>
+            </div>
+        </main>    
+    {% endblock %}
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>

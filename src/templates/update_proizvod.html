@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+	{% block title %}
+	Izmena podataka - Python Fashion
+	{% endblock %}
+	{% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}
+    {% block main %}
+    <div class="container-korisnik">
+        <div class="title-div">
+            <h2>Izmena podataka za proizvod {{ proizvod.get_naziv() }}</h2>
+        </div>
+        <form class="update_forma" action="/update_proizvod/{{ proizvod.get_id() }}" method="POST" enctype="multipart/form-data">
+            <div class="input-pair">
+                <label for="naziv">Naziv: </label>
+                <input type="text" name="naziv" value="{{ proizvod.get_naziv() }}">
+            </div>
+            <div class="input-pair">
+                <label for="cena">Cena: </label>
+                <input type="text" name="cena" value="{{ proizvod.get_cena() }}">
+            </div>
+            <div class="input-pair">
+                <label for="opis">Opis: </label>
+                <input type="text" name="opis" value="{{ proizvod.get_opis() }}">
+            </div>
+            <div class="input-pair">
+                <label for="slika">Slika: </label>
+                <input type="file" name="slika">
+            </div>
+            <div class="input-pair">
+                <label for="u_prodaji">U prodaji: </label>
+                <div class="input-boxes">
+                {% if proizvod.get_u_prodaji() == 'da' %}                
+                    <span>Da<input type="radio" name="prodaja" value="da" checked></span>
+                    <span>Ne<input type="radio" name="prodaja" value="ne"></span>
+                {% else %}
+                    <span> Da <input type="radio" name="prodaja" value="da"></span>
+                    <span> Ne <input type="radio" name="prodaja" value="ne" checked></span>
+                {% endif %}
+                </div>
+            </div>    
+            <input type="hidden" name="broj_prodatih" value="{{ proizvod.get_broj_prodatih() }}">        
+            <p class="p-input-submit">
+                <input type="submit" value="Potvrdi">
+            </p>
+        </form>
+    </div>
+    {% endblock %}
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>

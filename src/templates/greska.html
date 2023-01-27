@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+	{% block title %}
+	Python Fashion
+	{% endblock %}
+	{% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}
+    {% block main %}
+        <div class="container">
+            <h1>Greska</h1>
+            <h2>{{ greska }}</h2>
+        </div>
+    {% endblock %}
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>

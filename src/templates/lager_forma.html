@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+	{% block title %}
+	Dodavanje na lager - Python Fashion
+	{% endblock %}
+	{% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}
+    {% block main %}
+    <div class="container">
+        <div class="korisnik-info-racun">
+            <h2>Proizvod: {{ proizvod.get_naziv() }}</h2>
+            <form action="/lager_dodaj" method="POST">
+                <label for="velicina">Velicina: </label>
+                <select name="velicina" required>
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                </select>
+                <label for="kolicina">Kolicina za dodavanje: </label>
+                <input type="number" name="kolicina">
+                <input type="hidden" name="proizvod_id" value="{{ proizvod.get_id() }}">
+                <input type="submit" value="Dodaj">
+            </form>
+        </div>
+    </div>
+    {% endblock %}
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>

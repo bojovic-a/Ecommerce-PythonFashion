@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+        {% block title %}Istorija{% endblock %}            
+    {% endblock %}        
+    <title>Istorija kupovine</title>
+</head>
+<body>
+    {% block javascript %}<script src="{{ url_for('static', filename='js/istorija_open.js' ) }}"></script>{% endblock %}
+    {% block header %}
+    {% endblock %}
+    {% block main %}
+    <div class="container">
+        <div class="container-istorija">
+            <h1>Istorija kupovine</h1>
+            {% for korpa in korpe %}        
+            <div class="stavka-istorije">
+                <div class="stavka-istorije-left">
+                    <p class="korpa-jedna">Datum kupovine: {{ korpa[3] }}</p>                       
+                    <img src="{{ url_for('static', filename=korpa[0]) }}" alt="">
+                </div>
+                <div class="stavka-istorije-right">
+                    <p>{{ korpa[1] }}</p>
+                    <p>Cena: {{ korpa[2] }}</p>
+                    <p>Kolicina: {{ korpa[4] }}</p>
+                </div>                
+            </div>                                    
+            {% endfor %}
+        </div>
+    </div>
+    {% endblock %}
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>

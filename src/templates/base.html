@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head_block %}
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo_transparent.png') }}">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ fontawesome_html() }}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">    
+    <title>{% block title %}{% endblock %}</title>
+    {% endblock %}    
+</head>
+<body> 
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    {% block javascript %}{% endblock %}   
+    {% block header_bock %}
+    <header>
+        <div class="header-top">
+            <a href="/"><img class="main-logo" src="{{ url_for('static', filename='images/logo_transparent.png') }}" alt=""></a>
+        </div>
+        <div class="header-navbar">
+            <ul class="navbar">
+                <li><a href="/">Pocetna</a></li>
+                <li><a href="/products_all">Ponuda</a></li>                
+            </ul>                       
+            <ul><i class="fa fa-bars hamburger-icon"></i></ul>
+            {% if session['privilegija'] == 1 %}
+            <ul>
+                <li><a id="admin-panel-link" href="/admin_panel">Admin panel</a></li>
+            </ul>
+            {% endif %} 
+            {% if session['privilegija'] == 2 %}
+            <ul>
+                <li><a id="admin-panel-link" href="/zaposleni_panel">Upravljanje proizvodima</a></li>
+            </ul>
+            {% endif %}
+            <ul class="hamburger-meni">
+                <li><img src="{{ url_for('static', filename='images/logo_transparent.png') }}" alt=""></li>
+                <li><i class="fa fa-window-close"></i></li>
+                <li><a href="/">Pocetna</a></li>
+                <li><a href="/products_all">Ponuda</a></li>                
+            </ul>
+            
+            <ul class="user-options">                
+                {% if 'username' in session %}
+                    <li><a href="/render_korpa"><i class="fa fa-shopping-cart"></i></a></li>
+                    <li><a href="/user_profile"><i class="fa fa-user"></i></a></li>
+                    <li><a href="/logout"><i class="fa fa-sign-out-alt"></i></a></li>
+                {% else %}
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Register</a></li>
+                {% endif %}
+            </ul>            
+        </div>
+    </header>
+    {% endblock %}
+    {% block main %}
+    
+    {% endblock %}
+    {% block footer_block %}
+
+    <footer>
+        <div class="footer-top">
+            <div class="footer-top-left">
+                <ul class="footer-links">
+                    <li><a href="/">Pocetna</a></li>
+                    <li><a href="/">Ponuda</a></li>
+                    <li><a href="/">O nama</a></li>
+                </ul>
+            </div>
+            <div class="footer-top-mid">
+                <ul class="footer-contant">
+                    <li><span>Telefon: +381 60 0000 000</span></li>
+                    <li><span>Email: pythonfashion@office.com</span></li>
+                    <li><span>Instagram: @pythonfashion</span></li>
+                </ul>
+            </div>
+            <div class="footer-top-right">
+                <img src="{{ url_for('static', filename='images/logo_transparent.png') }}" alt="">
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <code>Designed and coded by Bojke&copy;</code>
+        </div>
+    </footer>
+    {% endblock %}
+</body>
+</html>

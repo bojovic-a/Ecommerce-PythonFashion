@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+	{% block title %}
+	{{ product.get_naziv() }} - Python Fashion
+	{% endblock %}
+	{% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}
+
+    {% block main %}
+        <div class="container">
+            <div class="single-product-page-main">
+                <div class="single-product-page-left">
+                    <div class="product_title">
+                        <h1>{{ product.get_naziv() }}</h1>
+                    </div>
+                    <div class="product-image-wrap">
+                        <img class="single-product-main-image" src="{{ url_for('static', filename=product.get_url_slike()) }}">
+                    </div>
+                </div>
+                <div class="single-product-page-right">
+                    <div class="single-product-desctiprion">
+                        <p>{{ product.get_opis() }}</p>
+                        <p>Cena: {{ product.get_cena() }} RSD</p>
+                        <form id="korpa-forma" action="/dodaj_u_korpu" method="POST">
+                            <input type="hidden" name="proizvod_id" value="{{ product.get_id() }}">
+                            <label for="velicina">Velicina: </label>
+                            <select name="velicina" required>
+                                <option value=""></option>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                            <span class="cart-add-button"><input type="submit" value="Dodaj u korpu"><i class="fa fa-shopping-cart"></i></input></span>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="container-comments">                
+                <form class="komentar-forma" action="/dodaj_komentar" method="POST">                    
+                    <h3>Komentari</h3><br>
+                    <input type="text" name="komentar" placeholder="Napisite komentar o ovom proizvodu">
+                    <input type="hidden" name="korisnik_id" value="{{ session['korisnik_id'] }}">
+                    <input type="hidden" name="proizvod_id" value="{{ product.get_id() }}">
+                    <input type="submit" value="Dodaj komentar">
+                </form>
+                {% for kom in komentar %}
+                <div class="komentar">
+                    <div class="komentar-korisnik">
+                        <img src="{{ url_for('static', filename=kom[1]) }}" alt="nema slike">
+                        <p>{{ kom[0] }}</p>
+                    </div>
+                    <div class="komentar-tekst">
+                        <p>{{ kom[2] }}</p>
+                    </div>
+                </div>
+            
+                {% endfor %}
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>

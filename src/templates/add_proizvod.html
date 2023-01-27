@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+        {% block title %}Dodavanje proizvoda{% endblock %}
+    {% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}  
+    {% block main %}  
+        <main>
+            <div class="login-form-container">
+                <h2 class="title-div">Dodaj proizvod</h2>
+                <form class="login-form" action="/dodaj_proizvod" method="POST" enctype="multipart/form-data">
+                                                                                                                                                                                            
+                    <p>
+                        <label for="naziv_proizvoda">Naziv proizvoda: </label>
+                        <input type="text" name="naziv_proizvoda">
+                    </p>
+                    <p>
+                        <label for="cena">Cena: </label>
+                        <input type="text" name="cena">
+                    </p>
+                    <p>
+                        <label for="opis">Opis: </label>
+                        <input type="text" name="opis">
+                    </p>
+                    <p>
+                        <label for="slika">Slika: </label>
+                        <input type="file" name="slika">                  
+                    </p>
+                    <p>
+                        <label for="u_prodaji">Stavite proizvod u prodaju odmah:</label>
+                        <span>Da <input type="radio" name="u_prodaji" value="da"></span>
+                        <span>Ne <input type="radio" name="u_prodaji" value="ne"></span>
+                    </p>                    
+                    <p class="p-input-submit">
+                        <label for=""></label>
+                        <input type="submit" value="Registruj se">
+                    </p>
+                </form>
+            </div>
+        </main>    
+    {% endblock %}
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>

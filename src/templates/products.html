@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+	{% block title %}
+	Ponuda - Python Fashion
+	{% endblock %}
+	{% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}
+    
+    {% block main %}    
+    <main>
+        <div class="products-page-container">            
+            <div class="container">
+                <h1>Svi proizvodi</h1>
+                <div class="row">
+                    {% for product in all_products %}                    
+                        <div class=" product">                            
+                                <a href="/proizvod/{{ product.get_id() }}">
+                                    <div class="product-image">
+                                        <img src="{{ url_for('static', filename=product.get_url_slike()) }}" alt="">
+                                    </div>
+                                    <div class="product-name-price">
+                                        <h2>{{ product.get_naziv() }}</h2>
+                                        <p>{{ product.get_cena() }} din</p>
+                                    </div>
+                                </a>                            
+                        </div>                    
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+    {% endblock %}
+    
+
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>

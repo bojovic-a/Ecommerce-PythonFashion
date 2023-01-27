@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+	{% block title %}
+	Izmena podataka - Python Fashion
+	{% endblock %}
+	{% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}
+    {% block main %}
+    <div class="container-korisnik">
+        <div class="title-div">
+            <h2>Izmena podataka za korisnika {{ korisnik.ime_prezime }}</h2>
+        </div>
+        <form class="update_forma" action="/update_korisnik/{{ korisnik.id }}" method="POST" enctype="multipart/form-data">
+            <p class="greska">{{ greska }}</p>
+            <div class="input-pair">
+                <label for="username">Username: </label>
+                <input type="text" name="username" value="{{ korisnik.username }}" required>
+            </div>
+            <div class="input-pair">
+                <label for="lozinka">Lozinka: </label>
+                <input type="password" name="lozinka" value="">
+            </div>
+            <div class="input-pair">
+                <label for="confirm-lozinka">Potvrdi lozinku: </label>
+                <input type="password" name="confirm-lozinka" value="">
+            </div>
+            <div class="input-pair">
+                <label for="ime_prezime">Ime i prezime: </label>
+                <input type="text" name="ime_prezime" value="{{ korisnik.ime_prezime }}" required>
+            </div>
+            <div class="input-pair">
+                <label for="adresa">Adresa: </label>
+                <input type="text" name="adresa" value="{{ korisnik.adresa }}" required>
+            </div>
+            <div class="input-pair">
+                <label for="broj_telefona">Broj telefona: </label>
+                <input type="text" name="broj_telefona" value="{{ korisnik.broj_telefona }}" required>
+            </div>
+            <div class="input-pair">
+                <label for="url_profilna">Profilna slika</label>
+                <input type="file" name="url_profilna">
+            </div>
+            <p class="p-input-submit">
+                <input type="submit" value="Potvrdi">
+            </p>
+        </form>
+    </div>
+    {% endblock %}
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,55 @@
+ <!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+	{% block title %}
+	Profil - Python Fashion
+	{% endblock %}
+	{% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}
+    {% block main %}
+    <div class="container">
+        <div class="container-korisnik">
+            <div class="title-div"><span>Korisnik {{ korisnik.ime_prezime }}&nbsp; &nbsp;<a href="/update_korisnik/{{ korisnik.id }}"><i class="fa fa-edit"></i></a></span></div>
+            <div class="korisnik-profile-picture">
+                <img src="{{ url_for('static', filename=korisnik.url_profilna) }}" alt="">
+                <a href="/istorija_kupovine/{{ korisnik.id }}">Istorija kupovine </a>
+            </div>  
+            <div class="korisnik-data-all">                
+                <div class="korisnik-data">
+                    <p>Ime i prezime: </p>
+                    <p>{{ korisnik.ime_prezime }}</p>
+                </div>
+                <div class="korisnik-data">
+                    <p>Korisnicko ime: </p>
+                    <p>{{ korisnik.username }}</p>
+                </div>
+                <div class="korisnik-data">
+                    <p>Adresa: </p>
+                    <p>{{ korisnik.adresa }}</p>
+                </div>
+                <div class="korisnik-data">
+                    <p>Broj telefona: </p>
+                    <p>{{ korisnik.broj_telefona }}</p>
+                </div>
+                <div class="korisnik-data">
+                    <p>Email: </p>
+                    <p>{{ korisnik.email }}</p>            
+                </div>                                                   
+            </div>     
+            <div class=" racun">
+                <p>Stanje na racunu: </p>
+                <p>{{ korisnik.stanje }} din</p> 
+                <a class="racun-add-html" href="/dodaj_eracun">Dodaj na racun</a>
+            </div>                       
+        </div>        
+    </div>
+    {% endblock %}
+    {% block footer %}
+    {% endblock %}    
+</body>
+</html>

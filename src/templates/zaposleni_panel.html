@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+	{% block title %}
+	Zaposleni - Python Fashion
+	{% endblock %}
+	{% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}
+    {% block main %}
+    <div class="container">
+        <div class="main-admin">
+            <h1>Python Fashion Panel za zaposlene</h1>
+            <div class="opcije">
+                <ul class="admin-opcije">
+                    <li><a href="/moji_proizvodi">Moji proizvodi</a></li>
+                    <li><a href="/dodaj_proizvod">Dodaj proizvod</a></li>                    
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+</body>
+</html>

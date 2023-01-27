@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+	{% block head %}
+	{% block title %}
+	Pocetna - Python Fashion
+	{% endblock %}
+	{% endblock %}	
+	
+</head>
+<body>
+	{% block header %}
+	{% endblock %}	
+	{% block main %}
+	<div class="main">
+		<div class="container">
+			<div class="hero-section">
+				<img src="{{ url_for('static', filename='/images/home_page/hero_section_rick.jpg') }}" alt="">
+				<h2>Never gonna give you up <br> Never gonna let you down</h2>
+			</div>
+			<h2 class="subtitle">Najpopularniji proizvodi</h2>
+			<div class="featured-proizvodi">				
+				{% for proizvod in proizvodi %}
+				<a href="/proizvod/{{ proizvod.get_id() }}">
+					<div class="featured-proizvod">
+						<div class="featured-proizvod-image">
+							<img src="{{ url_for('static', filename=proizvod.get_url_slike()) }}" alt="">
+						</div>
+						<div class="featured-proizvod-tekst">
+							<p>{{ proizvod.get_naziv() }}</p>
+						</div>
+					</div>
+				</a>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	{% endblock %}
+	{% block footer %}
+	{% endblock %}
+</body>
+</html>

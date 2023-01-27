@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}
+	{% block title %}
+    Korpa - Python Fashion
+	{% endblock %}
+	{% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}
+    {% block main %}
+    <div class="container">
+        <div class="container-korpa">
+            <div class="title-div">
+                <h1>Korpa</h1>
+            </div>
+            {% if stavke %}
+                {% for st in stavke %}                           
+                    <div class="stavka-korpe">
+                        <div class="korpa-left">
+                            <img src="{{ url_for('static', filename=st[7]) }}" alt="slika nedostupna">
+                        </div>
+                        <div class="korpa-right">
+                            <p>Proizvod: {{ st[1] }}</p>                      
+                            <span class="kolicina-korpa">Kolicina: <a href="/kolicina_minus?korpa_id={{ st[4] }}&proizvod_id={{ st[3] }}">-&nbsp; </a>{{ st[2] }}<a href="/kolicina_plus?korpa_id={{ st[4] }}&proizvod_id={{ st[3] }}">&nbsp; +</a></span><br>
+                            <p>Velicina: {{ st[-1] }}</p>
+                        </div>
+                        <a class="delete-stavka-button" href="/delete_stavka_korpe?korpa_id={{ st[4] }}&proizvod_id={{ st[3] }}">Obrisi</a>                    
+                    </div>            
+                {% endfor %}
+                <div class="kupi-dugme">
+                    <a href="/kupi?korisnik_id={{ stavke[0][6] }}&korpa_id={{ stavke[0][4] }} ">Kupi</a>
+                </div>                
+            {% else %}
+                <h3>Korpa je prazna</h3>
+                <p>Istoriju kupovine mozete videti na Vasem profilu</p>
+            {% endif %}            
+        </div>    
+    </div>
+    {% endblock %}
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    {% block head %}    
+        {% block title %}Spisak korisnika{% endblock %}
+    {% endblock %}
+</head>
+<body>
+    {% block header %}
+    {% endblock %}
+    {% block main %}
+    <div class="container">
+        <div class="container-svi-korisnici">
+            <h1>Spisak korisnika</h1>
+            {% for korisnik in svi_korisnici %}
+                <div class="admin-list">
+                    <p>{{ korisnik[1] }}</p>
+                    <p>{{ korisnik[3] }}</p>
+                    <p>{{ korisnik[5] }}</p>
+                    <p>{{ korisnik[6] }}</p>
+                    <p>{{ korisnik[7] }}</p>
+                    <form action="/dodeli_prava" method="POST">
+                        <input type="hidden" name="korisnik_id" value="{{ korisnik[0] }}">
+                    {% if korisnik[8] == 1 %}
+                        <span>Admin<input type="radio" name="prava" value="1" checked></span>
+                        <span>Prodavac<input type="radio" name="prava" value="2"></span>
+                        <span>Kupac<input type="radio" name="prava" value="3"></span>
+                    {% elif korisnik[8] == 2 %}
+                        <span>Admin<input type="radio" name="prava" value="1"></span>
+                        <span>Prodavac<input type="radio" name="prava" value="2" checked></span>
+                        <span>Kupac<input type="radio" name="prava" value="3"></span>
+                    {% else %}
+                        <span>Admin<input type="radio" name="prava" value="1"></span>
+                        <span>Prodavac<input type="radio" name="prava" value="2"></span>
+                        <span>Kupac<input type="radio" name="prava" value="3" checked></span>
+                    {% endif %}
+                        <input type="submit" value="Izmeni prava">
+                    </form>
+                    <a href="/update_korisnik/{{ korisnik[0] }}">Izmeni vrednosti</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endblock %}
+    {% block footer %}
+    {% endblock %}
+</body>
+</html>
