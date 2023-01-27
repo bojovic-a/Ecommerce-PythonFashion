@@ -2,6 +2,7 @@
 
 Ovo je studentski projekat i on predstavlja Internet prodavnicu sa funckionalnostima vezanim za kupovinu "novcem" kojeg korisnik sebi moze dodati koliko god zeli :). U nastavku su izlistane funkcionalnosti, pravila validacije u formama...
 
+
 ## Kako bi sve radilo kako treba, potrebno je imati instalirane module:
 	-flask
 	-mysql-connector
@@ -9,6 +10,13 @@ Ovo je studentski projekat i on predstavlja Internet prodavnicu sa funckionalnos
 	-datetime
 	-werkzeug.utils
 	-os
+
+
+##### Pokretanje 
+Connection string za povezivanje sa bazom se nalazi na vrhu main.py
+Za pokretanje aplikacije
+	flask --app <putanja_ka_main.py> run
+
 
 SQL fajl sa bazom - flask_eprod.sql
 
