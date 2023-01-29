@@ -63,6 +63,7 @@ prijava kao administrator:
 	-prikaz komentara za dati proizvod i opcija unosa komentara ako je korisnik ulogovan
 	-pritiskom na dugme "dodaj u korpu" se proizvod dodaje u korpu
 	-ukoliko zelimo da dodamo u korpu proizvod kojeg trenutno nema na stanju, dobijamo odgovarajucu poruku
+	-opcije za sortiranje po nazivu ili ceni se nalaze na vrhu stranice
 	
 ## 6. Korpa
 
