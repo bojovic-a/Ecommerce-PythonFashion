@@ -609,7 +609,7 @@ def update_korisnik(korisnik_id):
 		cursor.close()
 		return redirect('/')
 
-@app.route('/products_all')
+@app.route('/products_all', methods=['POST', 'GET'])
 def products_all():
 	if request.method == "GET":
 		all_products_db = Proizvod.izvuci_sve_proizvode()		
@@ -618,9 +618,34 @@ def products_all():
 			if product.get_u_prodaji() == 'da':
 				proizvodi_prodaja.append(product)
 
+		return render_template('products.html', all_products=proizvodi_prodaja)
+	
+	if request.method == 'POST':
+		kriterijum_sortiranja = request.form['kriterijum']
+
+		all_products_db = Proizvod.izvuci_sve_proizvode()		
+		proizvodi_prodaja = []
+		for product in all_products_db:
+			if product.get_u_prodaji() == 'da':
+				proizvodi_prodaja.append(product)
+
+
+		if kriterijum_sortiranja == 'cena-rastuca':
+			proizvodi_prodaja = sorted(proizvodi_prodaja, key=lambda x : x.get_cena())			
+
+		elif kriterijum_sortiranja == 'cena-opadajuca':
+			proizvodi_prodaja = sorted(proizvodi_prodaja, key=lambda x : x.get_cena(), reverse=True)
+			
+		elif kriterijum_sortiranja == 'naziv-rastuci':
+			proizvodi_prodaja = sorted(proizvodi_prodaja, key=lambda x : x.get_naziv())			
+
+		elif kriterijum_sortiranja == 'naziv-opadajuci':
+			proizvodi_prodaja = sorted(proizvodi_prodaja, key=lambda x : x.get_naziv(), reverse=True)
+
+		else:
+			proizvodi_prodaja = proizvodi_prodaja
 
 		return render_template('products.html', all_products=proizvodi_prodaja)
-
 
 def ukini_bytearray(bytearray_tuple):	
 	bytearray_tuple = list(bytearray_tuple)	

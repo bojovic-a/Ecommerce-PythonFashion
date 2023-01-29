@@ -805,6 +805,35 @@ form select {
     color: #c22;
 }
 
+.all-products-options {
+    width: 90%;
+    height: 3em;
+    margin: auto;    
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    padding: 0 2%;
+    border-radius: .5em;
+}
+
+.sortiraj-forma {    
+    font-weight: 700;    
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+    border-radius: .5em;
+    font-size: 1em;
+    vertical-align: middle;
+}
+
+.sortiraj-forma select {
+    background-color: #eee;
+    color: black;
+    border-radius: .5em;
+    font-weight: 700;
+    vertical-align: middle;
+}
 
 @media screen and (max-width: 1000px) {
 

@@ -17,6 +17,18 @@
         <div class="products-page-container">            
             <div class="container">
                 <h1>Svi proizvodi</h1>
+                <div class="all-products-options">
+                    <form class="sortiraj-forma" action="/products_all" method="POST">
+                        <label for="kriterijum">Sortiraj po &nbsp;</label>
+                        <select name="kriterijum" onchange="this.form.submit()">
+                            <option value=""> </option>
+                            <option value="cena-rastuca">Ceni &uarr; </option>
+                            <option value="cena-opadajuca">Ceni &darr; </option>
+                            <option value="naziv-rastuci">Nazivu (A-Z) </option>
+                            <option value="naziv-opadajuci">Nazivu (Z-A) </option>
+                        </select>
+                    </form>
+                </div>
                 <div class="row">
                     {% for product in all_products %}                    
                         <div class=" product">                            
