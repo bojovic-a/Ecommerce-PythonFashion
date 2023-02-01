@@ -1,4 +1,3 @@
-
 from flask import Flask,render_template,request,session, redirect, url_for, flash
 import mysql.connector
 from flask_fontawesome import FontAwesome
@@ -408,7 +407,8 @@ class Komentar:
 	def izvuci_komentare(id_proizvod):
 		cursor = mydb.cursor(prepared=True)
 		sql = '''
-			SELECT korisnik.korisnicko_ime, korisnik.url_profilna_slika, komentar.tekst_komentara
+			SELECT korisnik.korisnicko_ime, korisnik.url_profilna_slika, komentar.tekst_komentara,
+			komentar.idKorisnik, komentar.idProizvod, komentar.stanje
 			FROM komentar
 			INNER JOIN korisnik
 			ON komentar.idKorisnik = korisnik.iDkorisnik
@@ -435,6 +435,21 @@ class Komentar:
 		'''
 		
 		parametri = (korisnik_id, proizvod_id, tekst_komentara)
+		cursor.execute(sql, parametri)
+		mydb.commit()
+
+	@staticmethod 
+	def banuj_komentar(id_korisnik, id_proizvod):
+		cursor = mydb.cursor(prepared=True)
+		sql = "UPDATE komentar SET stanje='ban' WHERE idKorisnik=? AND idProizvod=?"
+		parametri = (id_korisnik, id_proizvod)
+		cursor.execute(sql, parametri)
+		mydb.commit()
+
+	def odbanuj_komentar(id_korisnik, id_proizvod):
+		cursor = mydb.cursor(prepared=True)
+		sql = "UPDATE komentar SET stanje='aktivan' WHERE idKorisnik=? AND idProizvod=?"
+		parametri = (id_korisnik, id_proizvod)
 		cursor.execute(sql, parametri)
 		mydb.commit()
 
@@ -1121,5 +1136,22 @@ def moji_proizvodi():
 
 	return redirect('/')
 
+
+@app.route('/ban_komentar', methods=['POST'])
+def ban_komentar():
+	korisnik_id = request.form['korisnik_id']
+	proizvod_id = request.form['proizvod_id']
+
+	Komentar.banuj_komentar(korisnik_id, proizvod_id)
+	return redirect(f'/proizvod/{proizvod_id}')
+
+
+@app.route('/unban_komentar', methods=['POST'])
+def unban_komentar():
+	korisnik_id = request.form['korisnik_id']
+	proizvod_id = request.form['proizvod_id']
+
+	Komentar.odbanuj_komentar(korisnik_id, proizvod_id)
+	return redirect(f'/proizvod/{proizvod_id}')
 
 app.run(debug=True)

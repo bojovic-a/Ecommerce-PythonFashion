@@ -53,16 +53,50 @@
                     <input type="submit" value="Dodaj komentar">
                 </form>
                 {% for kom in komentar %}
-                <div class="komentar">
-                    <div class="komentar-korisnik">
-                        <img src="{{ url_for('static', filename=kom[1]) }}" alt="nema slike">
-                        <p>{{ kom[0] }}</p>
+                {% if session['privilegija'] == 2 or session['privilegija'] == 3 %}
+                    {% if kom[5] == 'aktivan' %}
+                        <div class="komentar">
+                            <div class="komentar-korisnik">
+                                <div class="komentar-korisnik-left">
+                                    <img src="{{ url_for('static', filename=kom[1]) }}" alt="nema slike">
+                                    <p>{{ kom[0] }}</p>
+                                </div>
+                                <div class="komentar-korisnik-right">                                
+                                </div>
+                            </div>
+                            <div class="komentar-tekst">
+                                <p>{{ kom[2] }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="komentar">
+                        <div class="komentar-korisnik">
+                            <div class="komentar-korisnik-left">
+                                <img src="{{ url_for('static', filename=kom[1]) }}" alt="nema slike">
+                                <p>{{ kom[0] }}</p>
+                            </div>
+                            <div class="komentar-korisnik-right">
+                                {%if kom[5] == 'aktivan'%}
+                                <form action="/ban_komentar" method="POST">
+                                    <input type="hidden" name="korisnik_id" value="{{ kom[3] }}">
+                                    <input type="hidden" name="proizvod_id" value="{{ kom[4] }}">
+                                    <button type="submit"><i class="fa fa-trash"></i></button>
+                                </a>
+                                {% else %}
+                                <form action="/unban_komentar" method="POST">
+                                    <input type="hidden" name="korisnik_id" value="{{ kom[3] }}">
+                                    <input type="hidden" name="proizvod_id" value="{{ kom[4] }}">
+                                    <button type="submit"><i class="fa fa-recycle"></i></button>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="komentar-tekst">
+                            <p>{{ kom[2] }}</p>
+                        </div>
                     </div>
-                    <div class="komentar-tekst">
-                        <p>{{ kom[2] }}</p>
-                    </div>
-                </div>
-            
+                {% endif %}
                 {% endfor %}
             </div>
         </div>

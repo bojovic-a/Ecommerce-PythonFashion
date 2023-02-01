@@ -645,8 +645,27 @@ form select {
 
 .komentar-korisnik {
     display: flex;
-    align-items: center;    
+    justify-content: space-between; 
     margin-bottom: 1em;  
+    padding: 0 1em;
+}
+
+.komentar-korisnik-left {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.komentar-korisnik-right button {
+    border: none;
+}
+
+.fa-trash {
+    color: darkred;
+}
+
+.fa-recycle {
+    color: green;
 }
 
 .komentar-korisnik img {

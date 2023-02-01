@@ -17,6 +17,7 @@
                 <div class="admin-list">
                     <p>{{ proizvod.get_naziv() }}</p>
                     <p>{{ proizvod.get_cena() }}</p>                    
+                    <a href="/proizvod/{{ proizvod.get_id() }}">Detaljnije</a>
                     <p id="u_prodaji">U prodaji: {{ proizvod.get_u_prodaji() }}</p>
                     <form action="/lager_forma" method="POST">
                         <input type="hidden" name="proizvod_id" value="{{ proizvod.get_id() }}">
