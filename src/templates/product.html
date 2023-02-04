@@ -27,7 +27,7 @@
                     <div class="single-product-desctiprion">
                         <p>{{ product.get_opis() }}</p>
                         <p>Cena: {{ product.get_cena() }} RSD</p>
-                        <form id="korpa-forma" action="/dodaj_u_korpu" method="POST">
+                        <form id="korpa-forma" action="/dodaj_korpu_session" method="POST">
                             <input type="hidden" name="proizvod_id" value="{{ product.get_id() }}">
                             <label for="velicina">Velicina: </label>
                             <select name="velicina" required>

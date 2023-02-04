@@ -20,8 +20,9 @@ mydb = mysql.connector.connect(
 	user="root",
 	password="", # ako niste nista menjali u phpmyadminu ovo su standardni
     # username i password
-	database="flask_eprod" # iz phpmyadmin 
-    )
+	database="flask_eprod", # iz phpmyadmin 
+
+)
 
 
 class Proizvod:
@@ -116,27 +117,29 @@ class Proizvod:
 		return p1
 
 	@staticmethod
-	def proveri_stanje_velicine(proizvod_id, velicina):
-		cursor = mydb.cursor(prepared=True)
+	def proveri_stanje_velicine(proizvod_id, velicina):	
+		cursor = mydb.cursor(buffered=True)
+		
 		sql = '''
-			SELECT *
+			SELECT kolicina
 			FROM lager
 			INNER JOIN proizvod
 			ON proizvod.idProizvod=lager.idProizvod
 			INNER JOIN velicina
 			ON velicina.idVelicina=lager.idVelicina
-			WHERE velicina.oznaka_velicine=? AND proizvod.idProizvod=?
+			WHERE velicina.oznaka_velicine=%s AND proizvod.idProizvod=%s
+			LIMIT 1
 		'''
 		parametri = (velicina, proizvod_id)
 
 		cursor.execute(sql, parametri)
-		rez = cursor.fetchall()
-
+		rez = cursor.fetchone()		
+		rez = ukini_bytearray(rez)
 		return rez
 
 	@staticmethod
 	def update_proizvod(proizvod):
-		cursor = mydb.cursor(prepared=True)
+		cursor = mydb.cursor(buffered=True)
 		sql = '''
 				UPDATE proizvod
 				SET
@@ -164,7 +167,7 @@ class Proizvod:
 
 		cursor.execute(sql, parametri)
 		lager_proizvoda = cursor.fetchall()
-		
+		cursor = mydb.cursor(prepared=True)
 		parametri = (kolicina, proizvod_id, velicina_id)
 		sql = '''
 			UPDATE lager SET
@@ -178,14 +181,14 @@ class Proizvod:
 
 	@staticmethod
 	def dodaj_na_lager(proizvod_id, velicina_id, kolicina):
-		cursor = mydb.cursor(prepared=True)
+		cursor = mydb.cursor(buffered=True)
 		sql = "SELECT * FROM lager WHERE idProizvod=? AND idVelicina=?"
 		parametri = (proizvod_id, velicina_id)		
 		
 		cursor.execute(sql, parametri)
 		lager_proizvoda = cursor.fetchall()
 
-		cursor = mydb.cursor(prepared=True)
+		cursor = mydb.cursor(buffered=True)
 		if lager_proizvoda:
 			parametri = (kolicina, proizvod_id, velicina_id)
 			sql = '''
@@ -272,7 +275,7 @@ class Korisnik:
 		self.stanje = stanje
 
 	def select_svi_korisnici():
-		cursor = mydb.cursor(prepared=True)
+		cursor = mydb.cursor(buffered=True)
 		sql = "SELECT * FROM korisnik"
 		cursor.execute(sql)
 		rez = cursor.fetchall()
@@ -283,7 +286,7 @@ class Korisnik:
 
 	def korisnik_register(username, email, password, confirm_password, ime_prezime, adresa, broj_telefona, url_slike):
 
-		cursor = mydb.cursor(prepared=True)
+		cursor = mydb.cursor(buffered=True)
 		sql = "SELECT * FROM korisnik WHERE korisnicko_ime=?"
 		parametri = (username, )
 		cursor.execute(sql, parametri)
@@ -303,12 +306,12 @@ class Korisnik:
 		mydb.commit()							
 		    
 	def kreiraj_korpu(id):
-		cursor = mydb.cursor(prepared=True)
-		sql = "INSERT INTO porudzbina VALUES(null, ?, ?, ?)"
-		parametri = (id, datetime.now(), "korpa")
+		cursor = mydb.cursor(buffered=True)
+		sql = "INSERT INTO porudzbina VALUES(null, %s, %s, %s)"
+		parametri = (id, datetime.now(), "izvrsena")
 		cursor.execute(sql, parametri)
 		mydb.commit()
-		sql = "SELECT * FROM porudzbina WHERE porudzbina.Korisnik_iDkorisnik=? AND porudzbina.stanje_porudzbine='korpa'"
+		sql = "SELECT * FROM porudzbina WHERE porudzbina.Korisnik_iDkorisnik=%s AND porudzbina.stanje_porudzbine='korpa'"
 		parametri = (id, )
 		cursor.execute(sql, parametri)
 		rez = cursor.fetchone()
@@ -316,17 +319,17 @@ class Korisnik:
 		return rez[0]
 
 	def kreiraj_stavku_korpe(proizvod_id, korpa_id, velicina):
-		cursor = mydb.cursor(prepared=True)	
+		cursor = mydb.cursor(buffered=True)	
 		sql = '''
 			SELECT idVelicina
 			FROM velicina 
-			WHERE oznaka_velicine=?
+			WHERE oznaka_velicine=%s
 		'''
 		parametri=(velicina, )
 		cursor.execute(sql, parametri)
 		id_velicina = cursor.fetchone()
 
-		sql = "INSERT INTO stavkaporudzbine VALUES(?, ?, ?, ?)"
+		sql = "INSERT INTO stavkaporudzbine VALUES(%s, %s, %s, %s)"
 		kolicina = 1		
 		parametri = (korpa_id, proizvod_id, kolicina, id_velicina[0])
 		cursor.execute(sql, parametri)
@@ -685,51 +688,23 @@ def render_proizvod(proizvod_id):
 			return render_template("product.html", product=proizvod)
 
 
+@app.route('/dodaj_korpu_session', methods=['POST'])
+def dodaj_korpu_session():
+	session['korpa'] = []
+	proizvod_id = request.form['proizvod_id']
+	velicina = request.form['velicina']
+	kolicina = 1
+	stavka_korpe = [proizvod_id, velicina, kolicina]
+
+	session['korpa'].append(stavka_korpe)
+
+	return redirect('/render_korpa')
+
 @app.route('/dodaj_u_korpu', methods=['POST'])
 def dodaj_u_korpu():
 
-	proizvod_id = request.form['proizvod_id']
-	velicina = request.form['velicina']	
-
-	if not Proizvod.proveri_stanje_velicine(proizvod_id, velicina):		
-		return render_template("greska.html", greska="Nema trazene velicine")
 	
-	if 'username' in session and 'korisnik_id' in session: 
-		user_id = session['korisnik_id']
-		username = session['username']	
-
-
-	cursor = mydb.cursor(prepared=True)
-	sql = "SELECT * FROM korisnik WHERE korisnicko_ime=?"
-	parametri = (username, )
-	cursor.execute(sql, parametri)
-	user = cursor.fetchall()	
-
-	if user:
-		user = ukini_bytearray(user)
-		user_id = user[0][0]
-
-		sql = '''SELECT porudzbina.Korisnik_idKorisnik , porudzbina.idKorpa
-				FROM porudzbina 				
-				WHERE Korisnik_idKorisnik=? AND porudzbina.stanje_porudzbine="korpa"'''
-		parametri = (user_id, )
-		cursor.execute(sql, parametri)
-		korpa = cursor.fetchone()
-
-		if korpa:			
-			try:
-
-				Korisnik.kreiraj_stavku_korpe(proizvod_id, korpa[1], velicina)				
-			except:
-				return render_template("greska.html")
-			
-		else:			
-			try:
-				korpa_id = Korisnik.kreiraj_korpu(user[0][0])				
-				Korisnik.kreiraj_stavku_korpe(proizvod_id, korpa_id, velicina)
-			except:
-				return render_template("greska.html")
-		#korpa = ukini_bytearray(korpa)
+	#korpa = ukini_bytearray(korpa)
 		#Korisnik.kreiraj_stavku_korpe(proizvod_id, korpa[0])
 				
 	return redirect('/render_korpa')
@@ -739,168 +714,147 @@ def dodaj_u_korpu():
 def render_korpa():
 	if 'username' not in session:
 		return redirect('/login')
+	
+	if 'korpa' not in session:
+		return render_template("korpa.html")
+	
 	username = session['username']
 
-	cursor = mydb.cursor(prepared=True)
+	proizvodi_u_korpi = session['korpa']
 
-	sql = '''SELECT korisnik.korisnicko_ime, proizvod.naziv_proizvoda, stavkaporudzbine.kolicina, 
-			proizvod.idProizvod, stavkaporudzbine.Korpa_idKorpa, porudzbina.stanje_porudzbine,
-			korisnik.iDkorisnik, proizvod.url_slike, velicina.oznaka_velicine
-			FROM stavkaporudzbine 
-			INNER JOIN porudzbina
-			ON stavkaporudzbine.Korpa_idKorpa=porudzbina.idKorpa
-			INNER JOIN korisnik 
-			ON porudzbina.Korisnik_iDkorisnik=korisnik.iDkorisnik
-			INNER JOIN proizvod
-			ON proizvod.idProizvod=stavkaporudzbine.Proizvod_idProizvod
-			INNER JOIN velicina
-			ON velicina.idVelicina=stavkaporudzbine.idVelicina
-			WHERE korisnik.korisnicko_ime=? AND porudzbina.stanje_porudzbine="korpa"'''
+	proizvodi_za_prikazivanje = []
 
-	parametri = (username, )
-	cursor.execute(sql, parametri)
-	stavke = cursor.fetchall()	
+	for proizvod in proizvodi_u_korpi:
+		cursor = mydb.cursor(prepared=True)
+		sql = '''
+			SELECT * 
+			FROM proizvod
+			WHERE idProizvod=?
+		'''
+		parametri = (proizvod[0], )
+		cursor.execute(sql, parametri)
+		rez = cursor.fetchone()
+		rez = ukini_bytearray(rez)
+		proizvodi_za_prikazivanje.append((rez,proizvod))
+
+	return render_template('korpa.html', proizvodi_za_prikazivanje=proizvodi_za_prikazivanje)
 	
-	try:			
-		if stavke:		
-			stavke = list(stavke)
-			for i in range (len(stavke)):			
-				stavke[i] = ukini_bytearray(stavke[i])
-			
-			return render_template('korpa.html', stavke=stavke)
-		else:
-			return render_template("korpa.html")
-	except:
-		return render_template("greska.html", greska="GRESKA PRILIKOM RENDEROVANJA KORPE")
 	
+@app.route('/delete_stavka_korpe/<proizvod_id>')
+def delete_stavka_session(proizvod_id):
+	korpa = session['korpa']
+	print(f"\n\n\n{proizvod_id}\n\n\n")
+	for i in range (len(korpa)):
+		if korpa[i][0] == proizvod_id:
+			korpa.remove(korpa[i])
 	
-@app.route('/delete_stavka_korpe')
-def delete_stavka_korpe():
-	korpa_id = request.args.get('korpa_id', None)
-	proizvod_id = request.args.get('proizvod_id', None)
-	
-	cursor = mydb.cursor(prepared=True)
-	sql = "DELETE FROM `stavkaporudzbine` WHERE stavkaporudzbine.Korpa_idKorpa=? AND Proizvod_idProizvod=?"
-	parametri = (korpa_id, proizvod_id)
-	cursor.execute(sql, parametri)
-	mydb.commit()
+	session['korpa'] = korpa
 
 	return redirect('/render_korpa')
 	#return redirect('/render_korpa')
 
-@app.route('/kolicina_plus')
-def kolicina_plus():
-	korpa_id = request.args.get('korpa_id', None)
-	proizvod_id = request.args.get('proizvod_id', None)	
-
-	cursor = mydb.cursor(buffered=True)
-	sql = "SELECT * FROM stavkaporudzbine WHERE Proizvod_idProizvod=%s AND Korpa_idKorpa=%s"
-	parametri = (proizvod_id, korpa_id)
-	cursor.execute(sql, parametri)
-	stavka = cursor.fetchone()
-
-	stavka = ukini_bytearray(stavka)
-	kolicina = int(stavka[2])
-	kolicina += 1
-
-	sql = "UPDATE stavkaporudzbine SET kolicina=%s WHERE Proizvod_idProizvod=%s AND Korpa_idKorpa=%s"
-	parametri = (kolicina, proizvod_id, korpa_id )
-	cursor.execute(sql, parametri)
-	mydb.commit()
+@app.route('/kolicina_plus/<proizvod_id>')
+def kolicina_plus(proizvod_id):
+	korpa = session['korpa']
+	print(f"\n\n\n{proizvod_id}\n\n\n")
+	for i in range (len(korpa)):
+		if korpa[i][0] == proizvod_id:
+			kolicina = int(korpa[i][2])
+			kolicina = kolicina + 1
+			korpa[i][2] = kolicina
+	
+	session['korpa'] = korpa
 
 	return redirect('/render_korpa')
 
-@app.route('/kolicina_minus')
-def kolicina_minus():
-	korpa_id = request.args.get('korpa_id', None)
-	proizvod_id = request.args.get('proizvod_id', None)	
 
-	cursor = mydb.cursor(prepared=True)
-	sql = "SELECT * FROM stavkaporudzbine WHERE Proizvod_idProizvod=? AND Korpa_idKorpa=?"
-	parametri = (proizvod_id, korpa_id)
-	cursor.execute(sql, parametri)
-	stavka = cursor.fetchone()
+@app.route('/kolicina_minus/<proizvod_id>')
+def kolicina_minus(proizvod_id):
+	korpa = session['korpa']
+	print(f"\n\n\n{proizvod_id}\n\n\n")
+	for i in range (len(korpa)):
+		if korpa[i][0] == proizvod_id:
+			kolicina = int(korpa[i][2])
+			if kolicina < 2:
+				return redirect('/render_korpa')
+			kolicina = kolicina - 1
+			korpa[i][2] = kolicina
 	
-	stavka = ukini_bytearray(stavka)
-	kolicina = int(stavka[2])
-	kolicina -= 1
-	if kolicina >= 1:
-		sql = "UPDATE stavkaporudzbine SET kolicina=? WHERE Proizvod_idProizvod=? AND Korpa_idKorpa=?"
-		parametri = (kolicina, proizvod_id, korpa_id)
+	session['korpa'] = korpa
 
-	else:
-		sql = "DELETE FROM `stavkaporudzbine` WHERE stavkaporudzbine.Korpa_idKorpa=? AND Proizvod_idProizvod=?"
-		parametri=(proizvod_id, korpa_id)
-	
-	cursor.execute(sql, parametri)
-	mydb.commit()
-	
 	return redirect('/render_korpa')
 
 @app.route('/kupi')
 def kupi():
-	korpa_id = request.args.get('korpa_id', None)
-	korisnik_id = request.args.get('korisnik_id', None)	
+
+	proizvodi_iz_korpe = session['korpa']
+
+	if 'username' not in session:
+		return redirect('/login')
+	
+	korisnik_id = session['korisnik_id']
+	username = session['username']	
+
 	cursor = mydb.cursor(buffered=True)
-
-	sql = '''
-		SELECT proizvod.proizvod_cena, stavkaporudzbine.kolicina, proizvod.idProdavac, proizvod.idProizvod, stavkaporudzbine.idVelicina
-		FROM stavkaporudzbine  
-		INNER JOIN proizvod
-		ON proizvod.idProizvod = stavkaporudzbine.Proizvod_idProizvod
-		INNER JOIN porudzbina
-		ON porudzbina.idKorpa = stavkaporudzbine.Korpa_idKorpa
-		WHERE porudzbina.Korisnik_iDkorisnik=%s AND porudzbina.idKorpa=%s
-	'''
-
-	
-	parametri = (korisnik_id, korpa_id)
+	sql = "SELECT * FROM korisnik WHERE korisnicko_ime=%s"
+	parametri = (username, )
 	cursor.execute(sql, parametri)
-	stavke_korpe = cursor.fetchall()
+	user = cursor.fetchall()	
+
+	if user:
+		user = ukini_bytearray(user)
+		korisnik_id = user[0][0]
+		
+		korpa_id = Korisnik.kreiraj_korpu(user[0][0])				
+		for proizvod in proizvodi_iz_korpe:			
+			
+			Proizvod.proveri_stanje_velicine(proizvod[0], proizvod[1])
+			Korisnik.kreiraj_stavku_korpe(proizvod[0], korpa_id, proizvod[1])
 	
+	stavke_korpe = session['korpa']
 	ukupno_para = 0
-	for i in range(len(stavke_korpe)):
-		stavke_korpe[i] = ukini_bytearray(stavke_korpe[i])
-		ukupno_para = ukupno_para + (stavke_korpe[i][0] * stavke_korpe[0][1])
-
-
-
+	sve_stavke = []
 	for stavka in stavke_korpe:
-		c = stavka[0]
-		k = stavka[1]		
-		prodavac = stavka[2]
-		proizvod_id = stavka[3]
-		velicina_id = stavka[4]
+		pr = Proizvod.izvuci_jedan_proizvod(stavka[0])
+		cena = pr.get_cena()
+		kolicina = stavka[2]
+		ukupno_para += kolicina*cena
+		cursor = mydb.cursor(prepared=True)
+		sql = "SELECT idVelicina FROM velicina WHERE velicina.oznaka_velicine=?"
+		parametri = (stavka[1], )
+		cursor.execute(sql, parametri)
+		velicina = cursor.fetchone()
+		velicina = ukini_bytearray(velicina)
+		sve_stavke.append([pr, kolicina, velicina])
+		print(sve_stavke)
 
+
+
+	for stavka in sve_stavke:				
+
+		prodavac = stavka[0].get_prodavac()
+		proizvod_id = stavka[0].get_id()
 		cursor = mydb.cursor(prepared=True)	
-		sql = "SELECT stanje FROM korisnik WHERE iDkorisnik=?"
+		sql = "SELECT stanje FROM korisnik WHERE iDkorisnik=? LIMIT 1"
 		parametri = (korisnik_id, )
 		cursor.execute(sql, parametri)
-		pare = cursor.fetchone()	
-				
-		pare = ukini_bytearray(pare)
-		pare = float(pare[0])
+		pare = cursor.fetchall()	
+						
+		pare = ukini_bytearray(pare)		
+		pare = float(pare[0][0])
+		print(pare, ukupno_para)
+		if pare > ukupno_para:			
 
-		if pare > (ukupno_para):
-			pare = pare - (c * k)
-
-			sql = '''
-				UPDATE porudzbina
-				SET porudzbina.stanje_porudzbine="izvrsena"
-				WHERE porudzbina.Korisnik_iDkorisnik=? AND porudzbina.idKorpa=?
-			'''
-			parametri = (korisnik_id, korpa_id)
-			cursor.execute(sql, parametri)
-			mydb.commit()
+			session['korpa'] = []						
 			sql = "UPDATE korisnik SET stanje=? WHERE korisnik.iDkorisnik=?"
 			parametri = (pare, korisnik_id)
 			cursor.execute(sql, parametri)
 			mydb.commit()
 			sql = "UPDATE korisnik SET stanje=stanje+? WHERE korisnik.iDkorisnik=?"
-			parametri = ((c*k), prodavac)
+			parametri = (ukupno_para, prodavac)
 			cursor.execute(sql, parametri)
-			Proizvod.skini_sa_lagera(proizvod_id, velicina_id, k)
-			Proizvod.dodaj_broj_prodatih(proizvod_id, k)
+			Proizvod.skini_sa_lagera(proizvod_id, stavka[2][0], stavka[1])
+			Proizvod.dodaj_broj_prodatih(proizvod_id, stavka[1])
 		else:
 			return render_template("greska.html", greska="Nemate dovoljno para")
 
@@ -933,8 +887,7 @@ def admin_panel():
 		return render_template('admin_panel.html')	
 
 @app.route('/istorija_kupovine/<korisnik_id>')
-def istorija_kupovine(korisnik_id):
-
+def istorija_kupovine(korisnik_id):	
 	if str(session['korisnik_id']) == korisnik_id or session['privilegija'] == '1':
 	
 		cursor = mydb.cursor(prepared=True)

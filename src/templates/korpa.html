@@ -17,22 +17,22 @@
             <div class="title-div">
                 <h1>Korpa</h1>
             </div>
-            {% if stavke %}
-                {% for st in stavke %}                           
+            {% if proizvodi_za_prikazivanje  %}
+                {% for st in proizvodi_za_prikazivanje %}                           
                     <div class="stavka-korpe">
                         <div class="korpa-left">
-                            <img src="{{ url_for('static', filename=st[7]) }}" alt="slika nedostupna">
+                            <img src="{{ url_for('static', filename=st[0][4]) }}" alt="slika nedostupna">
                         </div>
                         <div class="korpa-right">
-                            <p>Proizvod: {{ st[1] }}</p>                      
-                            <span class="kolicina-korpa">Kolicina: <a href="/kolicina_minus?korpa_id={{ st[4] }}&proizvod_id={{ st[3] }}">-&nbsp; </a>{{ st[2] }}<a href="/kolicina_plus?korpa_id={{ st[4] }}&proizvod_id={{ st[3] }}">&nbsp; +</a></span><br>
-                            <p>Velicina: {{ st[-1] }}</p>
+                            <p>Proizvod: {{ st[0][1] }}</p>                      
+                            <span class="kolicina-korpa">Kolicina: <a href="/kolicina_minus/{{ st[1][0] }}">-&nbsp; </a>{{ st[1][2] }}<a href="/kolicina_plus/{{ st[1][0] }}">&nbsp; +</a></span><br>
+                            <p>Velicina: {{ st[1][2] }}</p>
                         </div>
-                        <a class="delete-stavka-button" href="/delete_stavka_korpe?korpa_id={{ st[4] }}&proizvod_id={{ st[3] }}">Obrisi</a>                    
+                        <a class="delete-stavka-button" href="/delete_stavka_korpe/{{ st[1][0] }}">Obrisi</a>                    
                     </div>            
                 {% endfor %}
                 <div class="kupi-dugme">
-                    <a href="/kupi?korisnik_id={{ stavke[0][6] }}&korpa_id={{ stavke[0][4] }} ">Kupi</a>
+                    <a href="/kupi">Kupi</a>
                 </div>                
             {% else %}
                 <h3>Korpa je prazna</h3>
